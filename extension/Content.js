@@ -15,3 +15,17 @@ document.addEventListener('mouseup', () => {
     }
   }, 10); // Small delay to allow text selection to finalize
 });
+
+
+document.addEventListener('contextmenu', (event) => {
+  const clickedElement = event.target;
+
+  // Check if the clicked element is an image
+  if (clickedElement.tagName === 'IMG') {
+    const imageUrl = clickedElement.src;
+    console.log('Image URL:', imageUrl);
+
+    // You can also send this to a background script in a Chrome extension:
+    // chrome.runtime.sendMessage({ imageUrl });
+  }
+});
