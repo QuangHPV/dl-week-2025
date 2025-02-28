@@ -1,11 +1,11 @@
-// // Create a context menu item
-// chrome.runtime.onInstalled.addListener(() => {
-//     chrome.contextMenus.create({
-//       id: 'sampleContextMenu',
-//       title: 'Sample Context Menu',
-//       contexts: ['all']
-//     });
-//   });
+// Create a context menu item
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.contextMenus.create({
+      id: 'sampleContextMenu',
+      title: 'Check this information !!!',
+      contexts: ['all']
+    });
+  });
   
 //   // Add a click event listener to the context menu item
 //   chrome.contextMenus.onClicked.addListener((info, tab) => {
