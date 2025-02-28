@@ -1,0 +1,19 @@
+<!-- popup.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>X Post Extractor</title>
+</head>
+<body>
+  <h3>Extracted Post Data</h3>
+  <div id="postData"></div>
+  <script>
+    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      if (request.action === 'storePostData') {
+        const postData = request.data;
+        document.getElementById('postData').innerText = JSON.stringify(postData, null, 2);
+      }
+    });
+  </script>
+</body>
+</html>
