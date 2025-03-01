@@ -104,7 +104,7 @@ Important guidelines:
 - Formulate complete, specific queries that don't require additional context
 - Use neutral language in queries that doesn't presuppose truth or falsehood
 - Include search terms that could reveal contradictory information
-- Aim for 3-5 search queries
+- Aim for 1-2 search queries
 - Suggest specific, credible source types in the recommended_sources array
 
 Here is the fact: {fact}"""

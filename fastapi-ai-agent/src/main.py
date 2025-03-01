@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from src.generated_text import GeneratedTextDetector
+from src.fact_check.sources_cite import PerplexitySearchClient
 # from src.agent import misinfo_detector
 from src.fact_check.search_utils import SearchEngine, FactChecker
 import os
@@ -52,10 +53,10 @@ async def get_fact_check_status():
 @app.post("/get_links/")
 async def get_links(request: TextRequest):
     try:
-        # Use the existing search engine instance
-        links = search_engine.get_links(request.text)
-        # Return the links
-        return {"links": links}
+        client = PerplexitySearchClient(api_key=os.getenv("PERPLEXITY_API_KEY"))
+        result = client.search(request.text, num_sources=3)
+        print(result)
+        return {"result": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
@@ -66,6 +67,7 @@ async def check_fact(request: FactRequest, fact_checker: FactChecker = Depends(g
         return {"result": result.content}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 if __name__ == "__main__":
     import uvicorn
