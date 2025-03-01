@@ -5,3 +5,5 @@ __init__.py
 .env
 env
 *.pt
+*.png
+*.jpg

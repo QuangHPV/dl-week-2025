@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from src.ai_detector.generated_text import GeneratedTextDetector
 from src.fact_check.search_utils import SearchEngine, FactChecker
-from src.deepfake_model.hf import misinfo_detector
+from src.deepfake_model.hf import misinfo_detector_hf
 
 load_dotenv()
 
@@ -38,7 +38,7 @@ class ImageRequest(BaseModel):
 async def deep_fake_detection(request: TextRequest):
     try:
         # Initialize deepfake detector
-        result = misinfo_detector(request.text)
+        result = misinfo_detector_hf(request.text)
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
