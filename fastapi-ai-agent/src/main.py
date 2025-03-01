@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from src.generated_text import GeneratedTextDetector
+from src.ai_detector.generated_text import GeneratedTextDetector
 from src.fact_check.search_utils import SearchEngine, FactChecker
 from src.wrapper import DeepfakeDetectionWrapper, YOLOBoundingBoxImageWrapper
 import os
