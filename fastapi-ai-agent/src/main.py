@@ -9,7 +9,7 @@ from src.ai_detector.generated_text import GeneratedTextDetector
 from src.fact_check.sources_cite import PerplexitySearchClient
 from src.fact_check.search_utils import SearchEngine, FactChecker
 from src.deepfake_model.roboflow import misinfo_detector_roboflow
-
+from src.deepfake_model.hf import misinfo_detector_hf
 load_dotenv()
 
 # Initialize the search engine once at module level
