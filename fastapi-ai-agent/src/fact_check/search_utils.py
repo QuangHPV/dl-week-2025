@@ -9,7 +9,7 @@ dotenv.load_dotenv()
 
 class SearchEngine():
     def __init__(self, cse, api):
-        self.client = GoogleSearchAPIWrapper(google_api_key=api, google_cse_id=cse)
+        self.client = GoogleSearchAPIWrapper(google_api_key=api, google_cse_id=cse, k=3)
         self.fact_check_prompt = ChatPromptTemplate.from_messages([
         ("system", """
         You are a fact-checking assistant that verifies claims against various sources found on the web.
@@ -34,12 +34,16 @@ class SearchEngine():
         return self.tool.run(query)
 
     def get_links(self, query):
-        return self.client.results(query)
+        return self.client.results(query, num_results=3)
 
 class FactChecker():
-    def __init__(self, llm_api, cse, google_api):
+    def __init__(self, llm_api, cse=None, google_api=None, search_engine=None):
         self.llm = ChatOpenAI(api_key=llm_api)
-        self.searcher = SearchEngine(cse, google_api)
+        # Use the provided search engine or create a new one if not provided
+        if search_engine:
+            self.searcher = search_engine
+        else:
+            self.searcher = SearchEngine(cse, google_api)
 
     def fact_check(self, fact):
         # Generate search queries based on the fact

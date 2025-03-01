@@ -9,6 +9,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Initialize the search engine once at module level
+search_engine = SearchEngine(cse=os.getenv("GOOGLE_CSE_ID"), api=os.getenv("GOOGLE_API_KEY"))
+
 app = FastAPI()
 
 # Configure CORS
@@ -36,9 +39,8 @@ async def check_ai_generated(request: TextRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 def get_fact_checker():
-    # Initialize the search engine and fact checker
-    engine = SearchEngine(cse=os.getenv("GOOGLE_CSE_ID"), api=os.getenv("GOOGLE_API_KEY"))
-    checker = FactChecker(llm_api=os.getenv("OPENAI_API_KEY"), cse=os.getenv("GOOGLE_CSE_ID"), google_api=os.getenv("GOOGLE_API_KEY"))
+    # Use the existing search engine and create a fact checker
+    checker = FactChecker(llm_api=os.getenv("OPENAI_API_KEY"), search_engine=search_engine)
     return checker
 
 @app.get("/fact-check/status/")
@@ -47,6 +49,16 @@ async def get_fact_check_status():
         "status": "OK"
     }
 
+@app.post("/get_links/")
+async def get_links(request: TextRequest):
+    try:
+        # Use the existing search engine instance
+        links = search_engine.get_links(request.text)
+        # Return the links
+        return {"links": links}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
 @app.post("/fact-check/")
 async def check_fact(request: FactRequest, fact_checker: FactChecker = Depends(get_fact_checker)):
     try:
