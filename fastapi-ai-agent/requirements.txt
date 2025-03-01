@@ -8,3 +8,4 @@ langchain-openai
 langchain-core
 python-dotenv
 langchain-community
+langchain_google_community
