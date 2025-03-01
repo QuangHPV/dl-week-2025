@@ -77,37 +77,33 @@ class FactChecker():
 
     def generate_query(self, fact):
         prompt = """I need you to help me generate effective Google search queries to verify whether a fact is true or false. For any fact I share with you, please respond ONLY with a JSON object in the following format, with no additional text before or after:
+                {{
+                "fact": "The fact I provided",
+                "key_claims": [
+                    "Claim 1",
+                    "Claim 2"
+                ],
+                "search_queries": [
+                    {{
+                    "query": "search query 1",
+                    "look_for": "what to look for in results"
+                    }},
+                    {{
+                    "query": "search query 2",
+                    "look_for": "what to look for in results"
+                    }}
+                }}
 
-{{
-  "fact": "The fact I provided",
-  "key_claims": [
-    "Claim 1",
-    "Claim 2"
-  ],
-  "search_queries": [
-    {{
-      "query": "search query 1",
-      "look_for": "what to look for in results"
-    }},
-    {{
-      "query": "search query 2",
-      "look_for": "what to look for in results"
-    }},
-    {{
-      "query": "search query 3",
-      "look_for": "what to look for in results"
-    }}
-}}
+                Important guidelines:
+                - Each query must be self-contained and work independently in Google search
+                - Formulate complete, specific queries that don't require additional context
+                - Use neutral language in queries that doesn't presuppose truth or falsehood
+                - Include search terms that could reveal contradictory information
+                - Aim for 1-2 search queries
+                - Suggest specific, credible source types in the recommended_sources array
 
-Important guidelines:
-- Each query must be self-contained and work independently in Google search
-- Formulate complete, specific queries that don't require additional context
-- Use neutral language in queries that doesn't presuppose truth or falsehood
-- Include search terms that could reveal contradictory information
-- Aim for 3-5 search queries
-- Suggest specific, credible source types in the recommended_sources array
-
-Here is the fact: {fact}"""
+                Here is the fact: {fact}"""
+        
         res = self.llm.invoke(prompt.format(fact=fact))
         queries = json.loads(res.content)
         print(queries)
