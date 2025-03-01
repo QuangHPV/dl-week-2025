@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from src.ai_detector.generated_text import GeneratedTextDetector
 from src.fact_check.sources_cite import PerplexitySearchClient
 from src.fact_check.search_utils import SearchEngine, FactChecker
-from src.deepfake_model.hf import misinfo_detector_hf
+from src.deepfake_model.roboflow import misinfo_detector_roboflow
 
 load_dotenv()
 
@@ -36,11 +36,20 @@ class ImageRequest(BaseModel):
     image_url: str
     
 @app.post('/deep_fake_detection/')
-async def deep_fake_detection(request: TextRequest):
+async def deep_fake_detection(request: ImageRequest):
     try:
         # Initialize deepfake detector
-        result = misinfo_detector_hf(request.text)
+        result = misinfo_detector_hf(request.image_url)
+
         return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.post("/deep_fake/")
+async def deep_fake(request: ImageRequest):
+    try:
+        result = misinfo_detector_roboflow(request.image_url)
+        return {"result": result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     

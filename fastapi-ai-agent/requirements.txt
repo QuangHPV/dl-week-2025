@@ -13,6 +13,6 @@ langchain_google_community
 ultralytics
 pillow
 inference_sdk
-efficientnet_pytorch==0.7.1
-torchvision==0.21.0
+efficientnet_pytorch
+torchvision
 git+https://github.com/albu/albumentations@529b074309256272fd2f0b2fdd52ccc62183fc57
