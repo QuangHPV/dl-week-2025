@@ -50,6 +50,7 @@ async def check_ai_generated(request: TextRequest):
 
         if len(request.text) < 1000:
             string = request.text.split()
+            string = request.text.split()
             if len(string) < 20:
                 return {"generated_score": -1}
 
