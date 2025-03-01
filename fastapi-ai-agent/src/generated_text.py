@@ -11,7 +11,7 @@ from src.preprocess import preprocess_text
 class GeneratedTextDetector:
     def __init__(self, 
                 model_path: str = "SuperAnnotate/ai-detector", 
-                max_len: int = 512, 
+                max_len: int = 64, 
                 preprocessing: bool = True) -> None:
         self.model = RobertaClassifier.from_pretrained(model_path)
         self.tokenizer = RobertaTokenizer.from_pretrained("SuperAnnotate/ai-detector")
