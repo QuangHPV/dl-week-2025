@@ -14,17 +14,12 @@ class SearchEngine():
         ("system", """
         You are a fact-checking assistant that verifies claims against various sources found on the web.
         
-        Given the search results, determine if the claim is:
-        - TRUE: The claim is supported by evidence from reliable sources
-        - FALSE: The claim is contradicted by evidence from reliable sources
-        - PARTIALLY TRUE: Some aspects of the claim are true while others are false or misleading
+        Given the search results, determine if the claim is likely to be:
+        - TRUE: The claim is the same as the evidence from reliable sources
+        - FALSE: There is any difference between the claim and the information gotten
         - UNVERIFIABLE: Not enough information from reliable sources to verify the claim
         
-        Explain your reasoning, cite the specific sources that support your determination, and include direct quotes from these sources when relevant.
-        
-        When evaluating sources, consider their reliability and credibility. Academic sources, reputable news organizations, and official government or institutional websites are generally more reliable.
-        
-        Always maintain a neutral, objective tone and avoid speculation beyond what the evidence supports.
+        Give me a short concise answer and cite sources as needed, be very critical, any differences in the information is considered not good.
         """),
         ("human", "Claim to verify: {claim}\n\nSearch results:\n{search_results}")
         ])
