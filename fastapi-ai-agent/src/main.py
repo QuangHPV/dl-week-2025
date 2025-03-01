@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from src.agent import ai_text_detector
+from src.generated_text import GeneratedTextDetector
 # from src.agent import misinfo_detector
 
 app = FastAPI()
@@ -19,8 +19,9 @@ class TextRequest(BaseModel):
 @app.post("/check-ai-generated/")
 async def check_ai_generated(request: TextRequest):
     try:
-        result = ai_text_detector(request.text)
-        return {"result": result}
+        detector = GeneratedTextDetector()
+        result = detector.detect_report(request.text)
+        return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
