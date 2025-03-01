@@ -1,12 +1,14 @@
-from fastapi import FastAPI, HTTPException, Depends
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from src.generated_text import GeneratedTextDetector
-from src.fact_check.sources_cite import PerplexitySearchClient
-# from src.agent import misinfo_detector
-from src.fact_check.search_utils import SearchEngine, FactChecker
 import os
 from dotenv import load_dotenv
+
+from fastapi import FastAPI, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
+
+from pydantic import BaseModel
+from src.ai_detector.generated_text import GeneratedTextDetector
+from src.fact_check.sources_cite import PerplexitySearchClient
+from src.fact_check.search_utils import SearchEngine, FactChecker
+from src.deepfake_model.hf import misinfo_detector
 
 load_dotenv()
 
@@ -30,14 +32,35 @@ class TextRequest(BaseModel):
 class FactRequest(BaseModel):
     fact: str
 
+class ImageRequest(BaseModel):
+    image_url: str
+    
+@app.post('/deep_fake_detection/')
+async def deep_fake_detection(request: TextRequest):
+    try:
+        # Initialize deepfake detector
+        result = misinfo_detector(request.text)
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+
 @app.post("/check-ai-generated/")
 async def check_ai_generated(request: TextRequest):
     try:
+
+        if len(request.text) < 1000:
+            string = request.text.split()
+            string = request.text.split()
+            if len(string) < 20:
+                return {"generated_score": -1}
+
         detector = GeneratedTextDetector()
         result = detector.detect_report(request.text)
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 def get_fact_checker():
     # Use the existing search engine and create a fact checker

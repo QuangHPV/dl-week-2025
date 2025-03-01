@@ -1,0 +1,6 @@
+[submodule "model/DIRE"]
+	path = model/DIRE
+	url = https://github.com/ZhendongWang6/DIRE
+[submodule "model/icpr2020dfdc"]
+	path = model/icpr2020dfdc
+	url = https://github.com/polimi-ispl/icpr2020dfdc
