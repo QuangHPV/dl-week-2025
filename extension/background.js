@@ -6,6 +6,12 @@ chrome.runtime.onInstalled.addListener(() => {
       contexts: ['selection']
     });
 
+    chrome.contextMenus.create({
+        id: 'FactCheckingMenu',
+        title: 'Fact check information',
+        contexts: ['selection']
+    });
+
     // Context menu for images
     chrome.contextMenus.create({
         id: 'ImageMenu',
@@ -29,31 +35,15 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
             function: showImagePopup,
             args: [info.srcUrl],
         });
+    } else if (info.menuItemId === 'FactCheckingMenu') {
+        // Handle image URL
+        chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            function: factCheck,
+            args: [info.selectionText],
+        });
     }
 });
-
-function showTextPopup(selectedText, result) {
-    console.log("Before request")
-    //const aiGenerated = await checkAIText(selectedText);
-    //await sleep(1000);
-    
-    const overlay = document.createElement('div');
-    overlay.className = 'custom-overlay';
-  
-    // Create popup
-    const popup = document.createElement('div');
-    popup.className = 'custom-popup';
-    popup.textContent = `Selected text: ${selectedText}\nResult:${result}`;
-    overlay.appendChild(popup);
-
-    // Append overlay to body
-    document.body.appendChild(overlay);
-  
-    // Remove overlay on click
-    overlay.addEventListener('click', () => {
-      document.body.removeChild(overlay);
-    });  
-}
 
 // Function to display a popup for image URL
 function showImagePopup(imageUrl) {
@@ -95,18 +85,64 @@ async function checkAIText(text) {
 
         const data = await response.json();
         //return data.result;  // Extracting the "result" attribute
-        showTextPopup(text, data.result);
+        const overlay = document.createElement('div');
+        overlay.className = 'custom-overlay';
+    
+        // Create popup
+        const popup = document.createElement('div');
+        popup.className = 'custom-popup';
+        popup.textContent = `Selected text: ${text}\nResult:${data.result}`;
+        overlay.appendChild(popup);
+
+        // Append overlay to body
+        document.body.appendChild(overlay);
+    
+        // Remove overlay on click
+        overlay.addEventListener('click', () => {
+            document.body.removeChild(overlay);
+        });  
     } catch (error) {
         console.error('Error:', error);
     }
 }
 
-async function returnTrue(text) {
-    console.log("Enter function: ");
-    const result = await true;
-    return result
-}
+async function factCheck(fact) {
+    
+    const url = 'http://127.0.0.1:8000/fact-check/';
+    console.log("After request");
+    try {
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ fact })
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+        const data = await response.json();
+        //return data.result;  // Extracting the "result" attribute
+        const overlay = document.createElement('div');
+        overlay.className = 'custom-overlay';
+    
+        // Create popup
+        const popup = document.createElement('div');
+        popup.className = 'custom-popup';
+        popup.textContent = `Result:${data.result}`;
+        overlay.appendChild(popup);
+
+        // Append overlay to body
+        document.body.appendChild(overlay);
+    
+        // Remove overlay on click
+        overlay.addEventListener('click', () => {
+            document.body.removeChild(overlay);
+        });
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
