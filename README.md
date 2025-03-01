@@ -29,6 +29,12 @@ The browser extension provides a user-friendly interface:
 - **Floating Widget**: Appears when text is selected, offering analysis options.
 - **Results Display**: Shows analysis results in an overlay without leaving the current page.
 
+## Datasets
+
+The models are pre-trained on these two Deepfake Detection datasets
+- **Deepfake Detection Challenge Dataset**: [Link to Dataset](https://ai.meta.com/datasets/dfdc/)
+- **FaceForensics++**: [Link to Dataset](https://github.com/ondyari/FaceForensics)
+
 ## Technologies Used
 
 ### Backend
