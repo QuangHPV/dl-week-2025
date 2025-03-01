@@ -38,7 +38,7 @@ The browser extension provides a user-friendly interface:
 - **LangChain**: Framework for developing applications powered by language models
 - **YOLO**: Object detection for identifying people in images
 - **Roboflow**: Cloud-based computer vision platform
-- **DIRE & DFDC Models**: Specialized deepfake detection models
+- **DIRE & DFDC Models**: Specialized SOTA deepfake detection models
 
 ### Frontend (Extension)
 
@@ -83,8 +83,8 @@ We chose a browser extension as the frontend because:
 2. Create a virtual environment and activate it:
 
    ```
-   python -m venv venv
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   conda create -n venv
+   conda activate venv
    ```
 
 3. Install the required dependencies:
@@ -150,6 +150,33 @@ The backend provides the following endpoints:
 - **POST /get_links/**: Gets relevant sources for a given text
   - Request body: `{"text": "Text to find sources for"}`
   - Response: `{"result": "List of sources with titles and URLs"}`
+
+### Relevant source searching
+
+Our system employs a dual-approach strategy for finding relevant sources to verify information:
+
+1. **Google Search Integration**: Using the Google Custom Search API, we:
+
+   - Generate optimized search queries based on the claim using LLM-powered query formulation
+   - Extract key claims from user statements to create targeted search queries
+   - Retrieve multiple search results for comprehensive coverage
+   - Process and analyze search results to extract relevant information
+
+2. **Perplexity API Integration**: As an alternative search method, we:
+   - Leverage Perplexity's AI-powered search capabilities
+   - Request specific numbers of sources from credible publications
+   - Extract titles, summaries, and links from each source
+   - Present organized source information to users
+
+The system intelligently combines these approaches to provide robust source verification. When a user submits text for fact-checking:
+
+1. The claim is analyzed to identify key verifiable statements
+2. Multiple search queries are automatically generated to target different aspects of the claim
+3. Search results are retrieved from reliable sources
+4. The information is synthesized and compared against the original claim
+5. Sources are presented alongside the verification result, allowing users to explore the evidence
+
+This approach ensures that users receive not just a verification result, but also the supporting evidence and sources they can review themselves.
 
 ## Future Improvements
 

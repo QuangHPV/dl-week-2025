@@ -54,8 +54,8 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   } else if (info.menuItemId === "ImageMenu") {
     // Show loading overlay first
     chrome.tabs.sendMessage(tab.id, {
-        action: "showLoading",
-        message: "Scanning image...",
+      action: "showLoading",
+      message: "Scanning image...",
     });
     // Handle image URL
     detectDeepfake(info.srcUrl, tab.id);
@@ -71,33 +71,37 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 async function detectDeepfake(imageUrl, tabId) {
-    console.log("Detecting deepfake in image:", imageUrl);
-    const url = "http://127.0.0.1:8000/deep_fake_detection/";
-    
-    try {
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text: imageUrl }),
-      });
-  
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-  
-      const data = await response.json();
-      
+  console.log("Detecting deepfake in image:", imageUrl);
+  const url = "http://127.0.0.1:8000/deep_fake_detection/";
 
-      // Show result using the existing showOverlay function
-      showOverlay(`Deepfake detection result: ${Math.round(data[0].Deepfake * 100)}% Deepfake`, tabId);
-    } catch (error) {
-      console.error("Error:", error);
-      showOverlay(`Error detecting deepfake: ${error.message}`, tabId);
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text: imageUrl }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
     }
+
+    const data = await response.json();
+
+    // Show result using the existing showOverlay function
+    showOverlay(
+      `Deepfake detection result: ${Math.round(
+        data[0].Deepfake * 100
+      )}% Deepfake`,
+      tabId
+    );
+  } catch (error) {
+    console.error("Error:", error);
+    showOverlay(`Error detecting deepfake: ${error.message}`, tabId);
   }
+}
 // Function to send a message to the content script to show an overlay
 function showOverlay(content, tabId) {
   chrome.tabs.sendMessage(tabId, {
@@ -125,17 +129,15 @@ async function checkAIText(text, tabId) {
 
     const data = await response.json();
 
-    
     if (data.generated_score < 0) {
-        showOverlay("Text too short, select at least 20 words", tabId);
+      showOverlay("Text too short, select at least 20 words", tabId);
     } else {
-        showOverlay(
-            `This text is ${Math.round(data.generated_score * 100)}% AI generated`, 
-            tabId
-        );
+      showOverlay(
+        `This text is ${Math.round(data.generated_score * 100)}% AI generated`,
+        tabId
+      );
     }
     // Send result to content script to display
-    
   } catch (error) {
     console.error("Error:", error);
     showOverlay(`Error checking AI text: ${error.message}`, tabId);
