@@ -26,14 +26,6 @@ class TextRequest(BaseModel):
 class FactRequest(BaseModel):
     fact: str
 
-# @app.post("/check-misinformation/")
-# async def check_misinformation(request: TextRequest):
-#     try:
-#         result = misinfo_detector(request.text)
-#         return {"result": result}
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-
 @app.post("/check-ai-generated/")
 async def check_ai_generated(request: TextRequest):
     try:
