@@ -54,8 +54,8 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   } else if (info.menuItemId === "ImageMenu") {
     // Show loading overlay first
     chrome.tabs.sendMessage(tab.id, {
-        action: "showLoading",
-        message: "Scanning image...",
+      action: "showLoading",
+      message: "Scanning image...",
     });
     // Handle image URL
     detectDeepfake(info.srcUrl, tab.id);
@@ -129,7 +129,6 @@ async function checkAIText(text, tabId) {
 
     const data = await response.json();
 
-    
     if (data.generated_score < 0) {
         showOverlay("Text too short, select at least 20 words", tabId);
     } else if (data.generated_score >= 0 && data.generated_score < 0.4) {
@@ -142,7 +141,6 @@ async function checkAIText(text, tabId) {
         showOverlay("This text is highly likely AI-generated.", tabId)
     }
     // Send result to content script to display
-    
   } catch (error) {
     console.error("Error:", error);
     showOverlay(`Error checking AI text: ${error.message}`, tabId);
