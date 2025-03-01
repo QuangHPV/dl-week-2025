@@ -9,7 +9,6 @@ def check_path_exists(path):
     return True
 
 def roboflow_model(image_url):
-    subprocess.check_call(["pip", "install", "inference-sdk"])
     from inference_sdk import InferenceHTTPClient
     CLIENT = InferenceHTTPClient(
         api_url="https://classify.roboflow.com",
@@ -20,9 +19,7 @@ def roboflow_model(image_url):
 
 def dire_model(image_url):
     original_dir = os.getcwd()
-    subprocess.check_call(['pip', 'install', 'torch', 'torchvision', '-f', 'https://download.pytorch.org/whl/torch_stable.html'])
     os.chdir('model/DIRE')
-    subprocess.check_call(['pip', 'install', '-r', 'requirements.txt'])
     command = ["python", "demo.py", "-f", image_url, "-m", "/weights/lsun_adm.pth"]
     subprocess.check_call(command)
     output = subprocess.check_output(command, stderr=subprocess.STDOUT, text=True)
@@ -32,8 +29,6 @@ def dire_model(image_url):
 
 def dfdc_model(url, type, model_choice = 'EfficientNetAutoAttB4', dataset_choice = 'DFDC'):
     original_dir = os.getcwd()
-    subprocess.check_call(["pip", "install", "efficientnet-pytorch"])
-    subprocess.check_call(["pip", "install", "-U", "git+https://github.com/albu/albumentations"])
     os.chdir("model/icpr2020dfdc/notebook")
     import torch
     from torch.utils.model_zoo import load_url
@@ -129,4 +124,4 @@ def main(url):
         else:
             print("No Deepfake Detected.")
 if __name__ == "__main__":
-    main("/Users/phonghoang/Downloads/fake_0.jpg")
+    main("/Users/phonghoang/Downloads/id0_id16_0001.mp4")
