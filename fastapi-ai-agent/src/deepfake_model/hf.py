@@ -139,8 +139,8 @@ def misinfo_detector_hf(image_url):
     for bbox, class_name in zip(bbox_images, predictions):
         if class_name["class"] == "person":
             human_bbox_images.append(bbox)
-    # for i, bbox in enumerate(bbox_images):
-    #     bbox.save(f"bbox_{i}.png")
+    for i, bbox in enumerate(human_bbox_images):
+        bbox.save(f"bbox_{i}.png")
     
     ans = None
     if not bbox_images:

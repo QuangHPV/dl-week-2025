@@ -6,3 +6,5 @@ __init__.py
 env
 *.pt
 *.pth
+*.png
+*.jpg
