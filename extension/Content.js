@@ -39,7 +39,10 @@ function createSelectionWidget(selection) {
 
   container.appendChild(widget);
   document.body.appendChild(container);
+  trackSelectionChanges(selection);
 }
+
+let isProcessingRequest = false;
 
 // Create the floating window with options
 function createFloatingWindow(container, selectedText) {
@@ -65,7 +68,7 @@ function createFloatingWindow(container, selectedText) {
   closeButton.innerHTML = "✕";
   closeButton.addEventListener("click", (e) => {
     e.stopPropagation();
-    floatingWindow.remove();
+    removeExistingWidgets();
   });
 
   // Add options
@@ -73,10 +76,13 @@ function createFloatingWindow(container, selectedText) {
   option1.className = "option";
   option1.textContent = "Detect AI Text";
   option1.addEventListener("click", () => {
+    isProcessingRequest = true;
+    console.log("Sending message for AI text checking...")
     chrome.runtime.sendMessage({
       action: "checkAIText",
       text: selectedText,
     });
+    removeExistingWidgets();
     floatingWindow.remove();
   });
 
@@ -84,10 +90,13 @@ function createFloatingWindow(container, selectedText) {
   option2.className = "option";
   option2.textContent = "Fact Check";
   option2.addEventListener("click", () => {
+    isProcessingRequest = true;
+    console.log("Sending message for fact checking...")
     chrome.runtime.sendMessage({
       action: "factCheck",
       text: selectedText,
     });
+    removeExistingWidgets();
     floatingWindow.remove();
   });
 
@@ -134,6 +143,61 @@ function createFloatingWindow(container, selectedText) {
   shouldHideMenu = true;
 }
 
+// CHANGE: Added a function to check if text is still selected
+function checkSelectionStatus() {
+  const selection = window.getSelection();
+  if (!selection || selection.isCollapsed) {
+    // No text is selected anymore, remove the widget
+    removeExistingWidgets();
+  }
+}
+
+function trackSelectionChanges(initialSelection) {
+  // Store the initial selection range for comparison
+  const initialRange = initialSelection.getRangeAt(0).cloneRange();
+  
+  // Use a periodic check instead of event listeners that might interfere with message passing
+  const checkInterval = setInterval(() => {
+    // Skip checks if we're currently processing a request
+    if (isProcessingRequest) return;
+    
+    const currentSelection = window.getSelection();
+    
+    // If there's no selection or it's empty (collapsed)
+    if (!currentSelection || currentSelection.isCollapsed) {
+      removeExistingWidgets();
+      clearInterval(checkInterval);
+      return;
+    }
+    
+    // Check if the selection has changed
+    try {
+      const currentRange = currentSelection.getRangeAt(0);
+      if (
+        currentRange.startContainer !== initialRange.startContainer ||
+        currentRange.startOffset !== initialRange.startOffset ||
+        currentRange.endContainer !== initialRange.endContainer ||
+        currentRange.endOffset !== initialRange.endOffset
+      ) {
+        // The selection has changed, check if we should remove the widget
+        if (currentSelection.toString().trim() === "") {
+          removeExistingWidgets();
+          clearInterval(checkInterval);
+        }
+      }
+    } catch (e) {
+      // If there's an error accessing the range, the selection has likely been removed
+      removeExistingWidgets();
+      clearInterval(checkInterval);
+    }
+  }, 500); // Check every 500ms - a balance between responsiveness and performance
+  
+  // Clean up after a reasonable amount of time (30 seconds)
+  setTimeout(() => {
+    clearInterval(checkInterval);
+  }, 30000);
+}
+
 // Listen for text selection
 document.addEventListener("mouseup", () => {
   setTimeout(() => {
@@ -158,6 +222,24 @@ document.addEventListener("mouseup", () => {
       createSelectionWidget(selection);
     }
   }, 10); // Small delay to allow text selection to finalize
+});
+
+// // CHANGE: Listen for mousedown to detect when user clicks elsewhere
+// document.addEventListener("mousedown", () => {
+//   // Use setTimeout to allow the mouseup event to process first
+//   setTimeout(checkSelectionStatus, 10);
+// });
+
+// CHANGE: Listen for keydown events that might change the selection (like Escape)
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    if (!isProcessingRequest) {
+      removeExistingWidgets();
+    }
+  } else {
+    // For other keys, check if selection still exists
+    setTimeout(checkSelectionStatus, 10);
+  }
 });
 
 document.addEventListener("contextmenu", (event) => {
@@ -206,6 +288,10 @@ function createCustomOverlay(content) {
   // Remove any existing overlays
   const existingOverlays = document.querySelectorAll(".custom-overlay");
   existingOverlays.forEach((overlay) => overlay.remove());
+
+  // CHANGE: Reset processing flag and remove widgets
+  isProcessingRequest = false;
+  removeExistingWidgets();
 
   const overlay = document.createElement("div");
   overlay.className = "custom-overlay";
