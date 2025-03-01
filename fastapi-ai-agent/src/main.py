@@ -2,9 +2,14 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from src.generated_text import GeneratedTextDetector
-# from src.agent import misinfo_detector
 from src.fact_check.search_utils import SearchEngine, FactChecker
+from src.wrapper import DeepfakeDetectionWrapper, YOLOBoundingBoxImageWrapper
 import os
+import cv2
+from PIL import Image
+import requests
+from io import BytesIO
+from src.deepfake_model.hf import misinfo_detector
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -28,6 +33,20 @@ class TextRequest(BaseModel):
 
 class FactRequest(BaseModel):
     fact: str
+
+class ImageRequest(BaseModel):
+    image_url: str
+    
+@app.post('/deep_fake_detection/')
+async def deep_fake_detection(request: TextRequest):
+    try:
+        # Initialize deepfake detector
+        result = misinfo_detector(request.text)
+
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
 
 @app.post("/check-ai-generated/")
 async def check_ai_generated(request: TextRequest):
