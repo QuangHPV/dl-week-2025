@@ -66,11 +66,6 @@ class Evaluator:
         :return: The probability of the image or video being a deepfake
         '''
         original_dir = os.getcwd()
-        print("-----------------")  
-        print(url)
-        print("-----------------")  
-        print(Path(url).resolve())
-        print("-----------------")
         os.chdir("./model/icpr2020dfdc/notebook")
         import sys
         sys.path.append('..')
