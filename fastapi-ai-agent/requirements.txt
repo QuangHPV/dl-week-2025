@@ -6,6 +6,8 @@ git+https://github.com/superannotateai/generated_text_detector.git@v1.1.0
 langchain-openai
 langchain-core
 python-dotenv
+requests
+pydantic
 langchain-community
 langchain_google_community
 ultralytics

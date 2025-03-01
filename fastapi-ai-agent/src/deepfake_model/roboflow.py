@@ -5,11 +5,8 @@ from inference_sdk import InferenceHTTPClient
 import requests
 from PIL import Image
 from io import BytesIO
-import os
 from torch.utils.model_zoo import load_url
-import matplotlib.pyplot as plt
 from scipy.special import expit
-from PIL import Image
 from pathlib import Path
 
 def check_path_exists(path):

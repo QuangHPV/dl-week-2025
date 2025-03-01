@@ -1,12 +1,10 @@
 from transformers import pipeline
 from typing import List, Dict
-import argparse
 from PIL import Image
 from ultralytics import YOLO
 import cv2
 import os
 import numpy as np
-import argparse
 import requests
 from io import BytesIO
 
