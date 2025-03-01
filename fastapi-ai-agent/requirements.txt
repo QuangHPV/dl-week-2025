@@ -3,4 +3,7 @@ uvicorn
 transformers
 torch
 git+https://github.com/superannotateai/generated_text_detector.git@v1.1.0 
-nltk
+langchain-openai
+langchain-core
+python-dotenv
+langchain-community
