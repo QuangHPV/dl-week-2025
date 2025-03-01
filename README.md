@@ -11,7 +11,7 @@ The system is designed to help users identify potentially misleading or AI-gener
 
 ## Architecture
 
-![System Architecture](resources\system.png)
+![System Architecture](resources/system.png)
 
 ### Backend Components
 

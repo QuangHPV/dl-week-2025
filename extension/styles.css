@@ -40,6 +40,7 @@
   justify-content: center;
   align-items: center;
   z-index: 9999; /* Ensure it overlays all other content */
+  color: black;
 }
 
 .custom-popup {
@@ -89,6 +90,7 @@
 .floating-window {
   position: absolute;
   background-color: white;
+  color: black;
   border-radius: 8px;
   border: 3px solid #2cb673;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);

@@ -71,37 +71,37 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 });
 
 async function detectDeepfake(imageUrl, tabId) {
-  console.log("Detecting deepfake in image:", imageUrl);
-  const url = "http://127.0.0.1:8000/deep_fake_detection/";
+    console.log("Detecting deepfake in image:", imageUrl);
+    const url = "http://127.0.0.1:8000/deep_fake/";
+    
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ image_url: imageUrl }),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      
 
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ image_url: imageUrl }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      // Show result using the existing showOverlay function
+      if (data.result > 0.99) {
+        showOverlay("Your image is highly likely deepfake", tabId);
+      } else {
+        showOverlay("Your image is likely real", tabId)
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      showOverlay(`Error detecting deepfake: ${error.message}`, tabId);
     }
-
-    const data = await response.json();
-
-    // Show result using the existing showOverlay function
-    showOverlay(
-      `Deepfake detection result: ${Math.round(
-        data[0].Deepfake * 100
-      )}% Deepfake`,
-      tabId
-    );
-  } catch (error) {
-    console.error("Error:", error);
-    showOverlay(`Error detecting deepfake: ${error.message}`, tabId);
   }
-}
 // Function to send a message to the content script to show an overlay
 function showOverlay(content, tabId) {
   chrome.tabs.sendMessage(tabId, {
@@ -130,12 +130,15 @@ async function checkAIText(text, tabId) {
     const data = await response.json();
 
     if (data.generated_score < 0) {
-      showOverlay("Text too short, select at least 20 words", tabId);
+        showOverlay("Text too short, select at least 20 words", tabId);
+    } else if (data.generated_score >= 0 && data.generated_score < 0.4) {
+        showOverlay("This text is highly likely human-written.", tabId)
+    } else if (data.generated_score >= 0.4 && data.generated_score < 0.6) {
+        showOverlay("This text is possibly human-written.", tabId)
+    } else if (data.generated_score >= 0.6 && data.generated_score < 0.8) {
+        showOverlay("This text is possibly AI-generated.", tabId)
     } else {
-      showOverlay(
-        `This text is ${Math.round(data.generated_score * 100)}% AI generated`,
-        tabId
-      );
+        showOverlay("This text is highly likely AI-generated.", tabId)
     }
     // Send result to content script to display
   } catch (error) {
