@@ -47,6 +47,8 @@ async def deep_fake_detection(request: TextRequest):
 @app.post("/check-ai-generated/")
 async def check_ai_generated(request: TextRequest):
     try:
+        if len(request.text) < 20:
+            return {"generated_score": -1}
         detector = GeneratedTextDetector()
         result = detector.detect_report(request.text)
         return result
