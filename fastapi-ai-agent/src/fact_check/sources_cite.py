@@ -2,11 +2,6 @@ import requests
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 
-class AnswerFormat(BaseModel):
-    title: str
-    summary: str
-    link: str
-
 class PerplexitySearchClient:
     def __init__(self, api_key: str, model: str = "sonar"):
         self.api_key = api_key
