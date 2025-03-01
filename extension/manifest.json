@@ -1,16 +1,17 @@
 {
   "manifest_version": 3,
-  "name": "YouTube Thumbnail Replacer",
+  "name": "Text Analysis Assistant",
   "version": "1.0",
-  "description": "Replaces all YouTube thumbnails with a custom image.",
+  "description": "Analyzes selected text for AI detection and fact checking.",
   "permissions": ["scripting", "contextMenus", "activeTab"],
   "background": {
     "service_worker": "background.js"
   },
+  "host_permissions": ["http://127.0.0.1:8000/"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "js": ["Content.js"],
       "css": ["styles.css"]
     }
   ]
