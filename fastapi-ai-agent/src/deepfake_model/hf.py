@@ -108,7 +108,7 @@ def download_image(image_url, save_dir):
     
     return image_path
 
-def misinfo_detector(image_url):
+def misinfo_detector_hf(image_url):
     '''
     Take in an image path and return the deepfake detection results.
     '''
