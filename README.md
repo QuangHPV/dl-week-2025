@@ -1,4 +1,4 @@
-# AI Content Detection and Fact-Checking System
+# CONAN - Can Outsmart Nonsense and Nonsense
 
 ## Overview
 
