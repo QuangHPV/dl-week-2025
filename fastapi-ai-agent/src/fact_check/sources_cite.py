@@ -1,6 +1,6 @@
 import requests
 from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
+from typing import Optional, Dict, Any
 
 class PerplexitySearchClient:
     def __init__(self, api_key: str, model: str = "sonar"):
@@ -53,7 +53,7 @@ class PerplexitySearchClient:
             result = response.json()
             content = result["choices"][0]["message"]["content"]
             
-            return content[8:-4]
+            return content
             
         except requests.exceptions.RequestException as e:
             print(f"API Request Error: {e}")
