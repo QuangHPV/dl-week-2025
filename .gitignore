@@ -5,3 +5,4 @@ __init__.py
 .env
 env
 *.pt
+*.pth

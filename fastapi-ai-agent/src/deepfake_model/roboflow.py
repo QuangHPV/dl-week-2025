@@ -24,8 +24,9 @@ def download_image(image_url, save_dir='./data'):
     response.raise_for_status()  # Raise an error for failed requests
     
     # Open the image and save it
+    folder_length = len(os.listdir(save_dir))
     image = Image.open(BytesIO(response.content))
-    image_path = os.path.join(save_dir, "downloaded_image.jpg")
+    image_path = os.path.join(save_dir, f"downloaded_image_{folder_length}.jpg")
     image.save(image_path)
     
     return image_path
@@ -139,12 +140,10 @@ class Evaluator:
         if file_extension.lower() in ['.jpg', '.jpeg', '.png']:
             results = []
             results.append(self.roboflow_model(url))
-            print(2, url)
             if torch.cuda.is_available():
                 results.append(self.dire_model(url))
-            results.append(self.dfdc_model(url, type="image"))
+            #results.append(self.dfdc_model(url, type="image"))
             result = sum(results) / len(results)
-            print(result)
             return result
         elif file_extension.lower() in ['.mp4', '.avi', '.mov', '.mkv']:
             result = self.dfdc_model(url, type="video")
@@ -160,6 +159,7 @@ def misinfo_detector_roboflow(image_url):
     return result
 
 if __name__ == "__main__":
+    print("Testing the deepfake detection model...")
     image_url = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNzIq4l1yMTP49R7vm8kWgY09FAhW9skpcFA&s"
     result = misinfo_detector_roboflow(image_url)
     print(result)
