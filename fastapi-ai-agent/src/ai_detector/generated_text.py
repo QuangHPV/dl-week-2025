@@ -5,7 +5,7 @@ from nltk.tokenize import sent_tokenize
 from transformers import RobertaTokenizer
 
 from generated_text_detector.utils.model.roberta_classifier import RobertaClassifier
-from src.preprocess import preprocess_text
+from src.ai_detector.preprocess import preprocess_text
 
 
 class GeneratedTextDetector:
