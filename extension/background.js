@@ -52,8 +52,13 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     // Handle selected text
     checkAIText(info.selectionText, tab.id);
   } else if (info.menuItemId === "ImageMenu") {
+    // Show loading overlay first
+    chrome.tabs.sendMessage(tab.id, {
+        action: "showLoading",
+        message: "Scanning image...",
+    });
     // Handle image URL
-    showImagePopup(info.srcUrl, tab.id);
+    detectDeepfake(info.srcUrl, tab.id);
   } else if (info.menuItemId === "FactCheckingMenu") {
     // Show loading overlay first
     chrome.tabs.sendMessage(tab.id, {
@@ -65,15 +70,34 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   }
 });
 
-// Function to display a popup for image URL
-function showImagePopup(imageUrl, tabId) {
-  // Send message to content script to show the image
-  chrome.tabs.sendMessage(tabId, {
-    action: "showOverlay",
-    content: `<img src="${imageUrl}" alt="Selected image" style="max-width: 100%; height: auto;">`,
-  });
-}
+async function detectDeepfake(imageUrl, tabId) {
+    console.log("Detecting deepfake in image:", imageUrl);
+    const url = "http://127.0.0.1:8000/deep_fake_detection/";
+    
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: imageUrl }),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      
 
+      // Show result using the existing showOverlay function
+      showOverlay(`Deepfake detection result: ${Math.round(data[0].Deepfake * 100)}% Deepfake`, tabId);
+    } catch (error) {
+      console.error("Error:", error);
+      showOverlay(`Error detecting deepfake: ${error.message}`, tabId);
+    }
+  }
 // Function to send a message to the content script to show an overlay
 function showOverlay(content, tabId) {
   chrome.tabs.sendMessage(tabId, {

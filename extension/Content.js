@@ -29,7 +29,7 @@ function createSelectionWidget(selection) {
   // Create the widget
   const widget = document.createElement("div");
   widget.className = "text-selection-widget";
-  widget.innerHTML = "🔍";
+  widget.innerHTML = "📰";
   widget.style.position = "relative";
 
   // Add hover event to show floating window
@@ -242,21 +242,9 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-document.addEventListener("contextmenu", (event) => {
-  const clickedElement = event.target;
-
-  // Check if the clicked element is an image
-  if (clickedElement.tagName === "IMG") {
-    const imageUrl = clickedElement.src;
-    console.log("Image URL:", imageUrl);
-
-    // You can also send this to a background script in a Chrome extension:
-    // chrome.runtime.sendMessage({ imageUrl });
-  }
-});
-
 // Create a loading overlay
 function createLoadingOverlay(message = "Loading...") {
+  console.log("Loading...");
   // Remove any existing overlays
   const existingOverlays = document.querySelectorAll(".custom-overlay");
   existingOverlays.forEach((overlay) => overlay.remove());
