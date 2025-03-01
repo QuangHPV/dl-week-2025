@@ -1,6 +1,7 @@
 import subprocess
 import os
 import torch
+from inference_sdk import InferenceHTTPClient
 
 def check_path_exists(path):
     if not os.path.exists(path):
@@ -16,6 +17,7 @@ def roboflow_model(image_url):
     )
     result = CLIENT.infer(image_url, model_id="deepfake-detection-using-yolo/1")
     return result['confidence']
+
 
 def dire_model(image_url):
     original_dir = os.getcwd()
