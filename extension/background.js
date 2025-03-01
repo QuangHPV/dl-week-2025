@@ -19,7 +19,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
         // Handle selected text
         chrome.scripting.executeScript({
             target: { tabId: tab.id },
-            function: showTextPopup,
+            function: checkAIText,
             args: [info.selectionText],
         });
     } else if (info.menuItemId === 'ImageMenu') {
@@ -32,14 +32,18 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     }
 });
 
-function showTextPopup(selectedText) {
+function showTextPopup(selectedText, result) {
+    console.log("Before request")
+    //const aiGenerated = await checkAIText(selectedText);
+    //await sleep(1000);
+    
     const overlay = document.createElement('div');
     overlay.className = 'custom-overlay';
   
     // Create popup
     const popup = document.createElement('div');
     popup.className = 'custom-popup';
-    popup.textContent = `Selected text: ${selectedText}`;
+    popup.textContent = `Selected text: ${selectedText}\nResult:${result}`;
     overlay.appendChild(popup);
 
     // Append overlay to body
@@ -71,17 +75,38 @@ function showImagePopup(imageUrl) {
     }); 
 }
 
-//   // Add a click event listener to the context menu item
-//   chrome.contextMenus.onClicked.addListener((info, tab) => {
-//     if (info.menuItemId === 'sampleContextMenu') {
-//       // Perform an action, e.g., open a new tab with a specific URL
-//       chrome.tabs.create({ url: 'https://www.example.com' });
-//     }
-//   });
 
-//   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-//     if (message.action === 'selectedText') {
-//       console.log('Selected text:', message.text);
-//       // Perform actions with the selected text, such as storing or displaying it
-//     }
-//   });
+async function checkAIText(text) {
+    console.log("After request");
+    const url = 'http://127.0.0.1:8000/check-ai-generated/';
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ text })
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        //return data.result;  // Extracting the "result" attribute
+        showTextPopup(text, data.result);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+async function returnTrue(text) {
+    console.log("Enter function: ");
+    const result = await true;
+    return result
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
