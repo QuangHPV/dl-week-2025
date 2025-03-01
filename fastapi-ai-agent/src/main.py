@@ -49,13 +49,14 @@ async def check_ai_generated(request: TextRequest):
     try:
 
         if len(request.text) < 1000:
-            string = " ".join(request.text.split())
+            string = request.text.split()
+            string = request.text.split()
             if len(string) < 20:
                 return {"generated_score": -1}
-        else:
-            detector = GeneratedTextDetector()
-            result = detector.detect_report(request.text)
-            return result
+
+        detector = GeneratedTextDetector()
+        result = detector.detect_report(request.text)
+        return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

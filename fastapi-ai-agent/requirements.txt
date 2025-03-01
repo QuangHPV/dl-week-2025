@@ -9,6 +9,7 @@ python-dotenv
 langchain-community
 langchain_google_community
 ultralytics
+pillow
 inference_sdk
 efficientnet_pytorch==0.7.1
 torchvision==0.21.0
