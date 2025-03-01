@@ -101,11 +101,17 @@ async function checkAIText(text, tabId) {
 
     const data = await response.json();
 
+    
+    if (data.generated_score < 0) {
+        showOverlay("Text too short, select at least 20 words", tabId);
+    } else {
+        showOverlay(
+            `This text is ${Math.round(data.generated_score * 100)}% AI generated`, 
+            tabId
+        );
+    }
     // Send result to content script to display
-    showOverlay(
-      `This text is ${Math.round(data.generated_score * 100)}% AI generated`,
-      tabId
-    );
+    
   } catch (error) {
     console.error("Error:", error);
     showOverlay(`Error checking AI text: ${error.message}`, tabId);
