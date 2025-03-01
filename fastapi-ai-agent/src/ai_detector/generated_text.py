@@ -1,11 +1,10 @@
 import torch
-from pydantic import BaseModel
 import torch.nn.functional as F
 from nltk.tokenize import sent_tokenize
 from transformers import RobertaTokenizer
 
-from generated_text_detector.utils.model.roberta_classifier import RobertaClassifier
 from src.ai_detector.preprocess import preprocess_text
+from generated_text_detector.utils.model.roberta_classifier import RobertaClassifier
 
 
 class GeneratedTextDetector:
@@ -76,7 +75,6 @@ class GeneratedTextDetector:
         text_chunks = self.chunk_text(text)
         scores = self.model_pass(text_chunks)
 
-        # Average scores
         gen_score = sum(scores) / len(scores)
         gen_score = gen_score.item() 
 

@@ -1,16 +1,13 @@
+import os
+from dotenv import load_dotenv
+
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
+
 from pydantic import BaseModel
 from src.ai_detector.generated_text import GeneratedTextDetector
 from src.fact_check.search_utils import SearchEngine, FactChecker
-from src.wrapper import DeepfakeDetectionWrapper, YOLOBoundingBoxImageWrapper
-import os
-import cv2
-from PIL import Image
-import requests
-from io import BytesIO
 from src.deepfake_model.hf import misinfo_detector
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -42,7 +39,6 @@ async def deep_fake_detection(request: TextRequest):
     try:
         # Initialize deepfake detector
         result = misinfo_detector(request.text)
-
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -51,11 +47,18 @@ async def deep_fake_detection(request: TextRequest):
 @app.post("/check-ai-generated/")
 async def check_ai_generated(request: TextRequest):
     try:
-        detector = GeneratedTextDetector()
-        result = detector.detect_report(request.text)
-        return result
+
+        if len(request.text) < 1000:
+            string = " ".join(request.text.split())
+            if len(string) < 20:
+                return {"generated_score": -1}
+        else:
+            detector = GeneratedTextDetector()
+            result = detector.detect_report(request.text)
+            return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 def get_fact_checker():
     # Use the existing search engine and create a fact checker
@@ -85,6 +88,7 @@ async def check_fact(request: FactRequest, fact_checker: FactChecker = Depends(g
         return {"result": result.content}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 if __name__ == "__main__":
     import uvicorn
